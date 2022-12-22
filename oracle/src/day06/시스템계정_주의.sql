@@ -1,0 +1,4 @@
+-- 사용자 계정 생성
+-- 반드시 시스템 계정!
+CREATE USER CHUN계정 IDENTIFIED BY CHUN계정;
+GRANT CONNECT, RESOURCE TO CHUN계정;
