@@ -1,0 +1,15 @@
+-- # DCL(Data Control Language)
+-- 데이터 제어어 --> System계정에서 해야만 함
+-- DB에 대한 보안, 무결성, 복구 등 DBMS를 제어하기 위한 언어
+-- 무결성이란? 정확성, 일관성을 유지하는 것
+-- 사용자의 권한이나 관리자 설정 등을 처리
+-- DCL의 종류
+-- 1. GRANT : 권한 부여
+-- 2. REVOKE : 권한 회수
+-- GRANT CONNECT, RESOURCE TO STUDENT; -- System계정으로 연결해서 하세요!!
+-- CONNECT, RESOURCE 롤이다. 롤은 권한이 여러개가 모여있다.
+-- 롤은 필요한 권한을 묶어서 관리할 때 편하고 부여, 회수할 때 편하다!!
+-- ROLE
+-- CONNECT롤 : CREATE SESSION
+-- RESOURCE롤 : CREATE CLUSTER, CREATE PROCEDURE, CREATE SEQUENCE, CREATE TABLE
+--             CREATE TRIGGER, CREATE TYPE, CREATE INDEXTYPE, CREATE OPERATOR;
