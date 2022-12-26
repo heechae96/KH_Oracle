@@ -1,0 +1,126 @@
+--@실습문제
+--고객이 상품주문시 사용할 테이블 TBL_ORDER를 만들고, 다음과 같이 컬럼을 구성하세요
+-- ORDER_NO(주문NO) : PK
+-- USER_ID(고객아이디)
+-- PRODUCT_ID(주문상품아이디)
+-- PRODUCT_CNT(주문개수) 
+-- ORDER_DATE : DEFAULT SYSDATE
+
+-- ORDER_NO은 시퀀스 SEQ_ORDER_NO을 만들고, 다음 데이터를 추가하세요.(현재시각 기준)
+-- * kang님이 saewookkang상품을 5개 주문하셨습니다.
+-- * gam님이 gamjakkang상품을 30개 주문하셨습니다.
+-- * ring님이 onionring상품을 50개 주문하셨습니다.
+
+CREATE TABLE TBL_ORDER(
+--    ORDER_NO NUMBER CONSTRAINT PK_ORDER_NO PRIMARY KEY
+    ORDER_NO NUMBER,
+    USER_ID VARCHAR2(20),
+    PRODUCT_ID VARCHAR(20),
+    PRODUCT_CNT NUMBER,
+    ORDER_DATE DATE DEFAULT SYSDATE,
+    CONSTRAINT PK_ORDER_NO PRIMARY KEY(ORDER_NO)
+    -- 컬럼레벨 -> 테이블레벨
+);
+
+--DROP TABLE TBL_ORDER;
+--
+--ALTER TABLE TBL_ORDER MODIFY PRODUCT_ID VARCHAR2(30);
+--ALTER TABLE TBL_ORDER DROP CONSTRAINT SYS_C007376;
+--ALTER TABLE TBL_ORDER ADD CONSTRAINT PK_ORDER_NO PRIMARY KEY(ORDER_NO);
+
+
+CREATE SEQUENCE SEQ_ORDER_NO;
+
+INSERT INTO TBL_ORDER VALUES(SEQ_ORDER_NO.NEXTVAL, 'KANG', 'SAEWOOKKANG', 5, DEFAULT);
+INSERT INTO TBL_ORDER VALUES(SEQ_ORDER_NO.NEXTVAL, 'GAM', 'GAMJAKKANG', 30, DEFAULT);
+INSERT INTO TBL_ORDER VALUES(SEQ_ORDER_NO.NEXTVAL, 'RING', 'ONIONRING', 50, DEFAULT);
+
+SELECT * FROM TBL_ORDER;    --3
+SELECT SEQ_ORDER_NO.CURRVAL FROM DUAL;  
+
+commit;
+
+INSERT INTO TBL_ORDER VALUES(SEQ_ORDER_NO.NEXTVAL, 'KHUSER01', 'PRODUCT01', 1, DEFAULT);
+
+SELECT * FROM TBL_ORDER;    --4
+SELECT SEQ_ORDER_NO.CURRVAL FROM DUAL;  
+
+ROLLBACK;
+
+SELECT * FROM TBL_ORDER; -- 3
+SELECT SEQ_ORDER_NO.CURRVAL FROM DUAL;  
+
+
+
+-- 실습문제2
+--KH_MEMBER 테이블을 생성
+--컬럼
+--MEMBER_ID	NUMBER
+--MEMBER_NAME	VARCHAR2(20)
+--MEMBER_AGE	NUMBER
+--MEMBER_JOIN_COM	NUMBER
+
+--이때 해당 사원들의 정보를 INSERT 해야 함
+--ID 값과 JOIN_COM은 SEQUENCE 를 이용하여 정보를 넣고자 함
+
+--ID값은 500 번 부터 시작하여 10씩 증가하여 저장 하고자 함
+--JOIN_COM 값은 1번부터 시작하여 1씩 증가하여 저장 해야 함
+--(ID 값과 JOIN_COM 값의 MAX는 10000으로 설정)
+
+--	MEMBER_ID	MEMBER_NAME	 MEMBER_AGE	 MEMBER_JOIN_COM	
+--	500		        홍길동		20		        1
+--	510		        김말똥		30		        2
+--	520		        삼식이		40		        3
+--	530		        고길똥		24		        4
+
+CREATE TABLE KH_MEMBER(
+    MEMBER_ID NUMBER,
+    MEMBER_NAME	VARCHAR2(20),
+    MEMBER_AGE NUMBER,
+    MEMBER_JOIN_COM	NUMBER
+);
+
+CREATE SEQUENCE SEQ_MEMBER_ID
+START WITH 500
+INCREMENT BY 10;
+
+CREATE SEQUENCE JOIN_COM
+MAXVALUE 10000;
+
+DROP SEQUENCE SEQ_MEMBER_ID;
+
+INSERT INTO KH_MEMBER VALUES(SEQ_MEMBER_ID.NEXTVAL, '홍길동', 20, JOIN_COM.NEXTVAL);
+INSERT INTO KH_MEMBER VALUES(SEQ_MEMBER_ID.NEXTVAL, '김말똥', 30, JOIN_COM.NEXTVAL);
+INSERT INTO KH_MEMBER VALUES(SEQ_MEMBER_ID.NEXTVAL, '최삼식', 40, JOIN_COM.NEXTVAL);
+INSERT INTO KH_MEMBER VALUES(SEQ_MEMBER_ID.NEXTVAL, '고길똥', 24, JOIN_COM.NEXTVAL);
+
+SELECT * FROM KH_MEMBER;
+SELECT SEQ_MEMBER_ID.CURRVAL FROM DUAL;
+SELECT JOIN_COM.CURRVAL FROM DUAL;
+
+
+-- 데이터 딕셔너리
+--> 자원을 효율적으로 관리하기 위한 다양한 정보를 저장하는 시스템 테이블
+--> 사용자가 테이블을 생성하거나 사용자를 변경하는 등의 작업을 할때 
+--  데이터베이스 서버에 의해 자동으로 갱신되는 테이블
+--> 주의. 사용자는 데이터 딕셔너리의 내용을 직접 수정하거나 삭제 할 수 없음
+--> 데이터 딕셔너리 안에는 중요한 정보가 많이 있기 때문에 
+--  사용자는 이를 활용하기 위해 데이터 딕셔너리 뷰(가상테이블)를 사용하게 됨
+SELECT * FROM USER_SEQUENCES;
+SELECT * FROM USER_VIEWS;
+SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = 'EMPLOYEE';
+SELECT * FROM USER_TABLES;
+
+-- 데이터 딕셔너리 뷰의 종류1
+-- 1. USER_XXXX
+-- > 자신(계정)이 소유한 객체 등에 관한 정보 조회가능
+-- 사용자가 아닌 DB에서 자동생성/관리해주는 것이며 USER_뒤에 객체명을 써서 조회함.
+-- 2. ALL_XXXX
+-- > 자신의 계정이 소유하거나 권한을 부여받은 객체 등에 관한 정보 조회가능
+-- 3. DBA_XXXX
+-- > 데이터베이스 관리자만 접근이 가능한 객체 등에 관한 정보 조회가능
+-- (DBA는 모든 접근이 가능하므로 결국 DB에 있는 모든 객체에 대한 조회 가능)
+-- 일반사용자는 못쓴다
+SELECT * FROM DBA_TABLES;
+-- ORA-00942: table or view does not exist
+-- 일반 사용자 계정에서는 사용 불가
